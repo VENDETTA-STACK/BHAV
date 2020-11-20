@@ -3,7 +3,8 @@ const { types } = require("util");
 
 const citySchema = mongoose.Schema({
     State: {
-        type: mongoose.Types.ObjectId, ref: "State",
+        type: mongoose.Types.ObjectId, 
+        ref: "State",
     },
     City: {
         type: String,

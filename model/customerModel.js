@@ -23,10 +23,12 @@ const customerSchema = mongoose.Schema({
         type: Number,
     },
     state: {
-        type: String,
+        type: mongoose.Types.ObjectId,
+        ref: "State",
     },
     city: {
-        type: String
+        type: mongoose.Types.ObjectId,
+        ref: "City",
     }
 });
 

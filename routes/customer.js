@@ -34,12 +34,30 @@ router.post("/register" , async function(req,res,next){
 router.post("/login" , async function(req,res,next){
     const { mobile } = req.body;
     try {
-        var record = await customerSchema.find({ mobile: mobile });
+        var record = await customerSchema.find({ mobile: mobile })
+                                         .populate("state")
+                                         .populate("city");
         if(record.length==1){
             res.status(200).json({ IsSuccess: true , Data: record , Message: "User LoggedIn" });
         }
         else{
             res.status(400).json({ IsSuccess: true , Data: 0 , Message: "This Mobile Number not Register" });
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false , Message: error.message });
+    }
+});
+
+router.post("/getUsers", async function(req,res,next){
+    try {
+        var record = await customerSchema.find()
+                                         .populate("state")
+                                         .populate("city");
+        if(record){
+            res.status(200).json({ IsSuccess: true , Count: record.length , Data: record , Message: "Users Found" });
+        }
+        else{
+            res.status(400).json({ IsSuccess: true , Data: 0 , Message: "Empty Users List" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
