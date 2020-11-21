@@ -10,6 +10,7 @@ var adminSchema = require('../model/adminData');
 var config = require('../config')
 const mongoose = require("mongoose");
 const { Console } = require('console');
+const { populate } = require('../model/productModel');
 
 router.post("/adminRegister" , async function(req,res,next){
     const { UserName , Password } = req.body;
@@ -103,7 +104,10 @@ router.post("/addCity" , async function(req,res,next){
 
 router.post("/getCity" , async function(req,res,next){
     try {
-        var record = await citySchema.find();
+        var record = await citySchema.find()
+                                     .populate({
+                                        path: "State",
+                                     });
         if(record){
             res.status(200).json({ IsSuccess: true , Data: record , Message: "States Found" });
         }
