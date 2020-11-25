@@ -24,7 +24,7 @@ router.post("/adminRegister" , async function(req,res,next){
             res.status(200).json({ IsSuccess: true , Data: [record] , Message: "Admin Added" });
         }
         else{
-            res.status(400).json({ IsSuccess: true , Data: 0 , Message: "Not Added" });
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Not Added" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
@@ -38,13 +38,13 @@ router.post("/adminLogin" , async function(req,res,next){
             UserName: UserName,
             Password: Password,
         });
-        //Console.log(record.length);
-        if(record){
+    //    console.log(record);
+        if(record.length == 1){
             //await record.save();
             res.status(200).json({ IsSuccess: true , Message: "Admin LoggedIn" });
         }
         else{
-            res.status(400).json({ IsSuccess: true , Message: "Not Registered" });
+            res.status(200).json({ IsSuccess: true , Message: "Not Registered" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
@@ -62,7 +62,7 @@ router.post("/addState" , async function(req,res,next){
             res.status(200).json({ IsSuccess: true , Data: [record] , Message: "State Added" });
         }
         else{
-            res.status(400).json({ IsSuccess: true , Data: 0 , Message: "Not Added" });
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Not Added" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
@@ -76,7 +76,7 @@ router.post("/getState" , async function(req,res,next){
             res.status(200).json({ IsSuccess: true , Data: record , Message: "States Found" });
         }
         else{
-            res.status(400).json({ IsSuccess: true , Data: 0 , Message: "No States Available" });
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "No States Available" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
@@ -95,7 +95,7 @@ router.post("/addCity" , async function(req,res,next){
             res.status(200).json({ IsSuccess: true , Data: [record] , Message: "City Added" });
         }
         else{
-            res.status(400).json({ IsSuccess: true , Data: 0 , Message: "Not Added" });
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Not Added" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
@@ -112,7 +112,7 @@ router.post("/getCity" , async function(req,res,next){
             res.status(200).json({ IsSuccess: true , Data: record , Message: "States Found" });
         }
         else{
-            res.status(400).json({ IsSuccess: true , Data: 0 , Message: "No States Available" });
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "No States Available" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });

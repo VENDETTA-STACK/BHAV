@@ -24,7 +24,7 @@ router.post("/register" , async function(req,res,next){
         if(record){
             res.status(200).json({ IsSuccess: true , Data: record , Message: "User Register Successfully" });
         }else{
-            res.status(400).json({ IsSuccess: true , Data: 0 , Message: "Registration Failed" });
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Registration Failed" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
@@ -41,7 +41,7 @@ router.post("/login" , async function(req,res,next){
             res.status(200).json({ IsSuccess: true , Data: record , Message: "User LoggedIn" });
         }
         else{
-            res.status(400).json({ IsSuccess: true , Data: 0 , Message: "This Mobile Number not Register" });
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "This Mobile Number not Register" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
@@ -57,7 +57,7 @@ router.post("/getUsers", async function(req,res,next){
             res.status(200).json({ IsSuccess: true , Count: record.length , Data: record , Message: "Users Found" });
         }
         else{
-            res.status(400).json({ IsSuccess: true , Data: 0 , Message: "Empty Users List" });
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Empty Users List" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });

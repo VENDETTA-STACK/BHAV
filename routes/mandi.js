@@ -21,7 +21,7 @@ router.post("/addMandi" , async function(req,res,next){
             res.status(200).json({ IsSuccess: true , Data: [record] , Message: "Mandi Added Successfully" });
             await record.save();
         }else{
-            res.status(400).json({ IsSuccess: true , Data: 0 , Message: "Mandi Not Added" });
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Mandi Not Added" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
@@ -43,7 +43,7 @@ router.post("/getAllMandi" , async function(req,res,next){
         if(record){
             res.status(200).json({ IsSuccess: true , Data: record , Message: "Mandi Data Found" });
         }else{
-            res.status(400).json({ IsSuccess: true , Data: 0 , Message: "No Mandi Data Found" });
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "No Mandi Data Found" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });

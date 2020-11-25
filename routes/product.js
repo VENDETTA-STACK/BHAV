@@ -46,7 +46,7 @@ router.post("/addProduct" , uploadProduct.single("productImage") , async functio
         if(record){
             res.status(200).json({ IsSuccess: true , Data: [record] , Message: "Product Added Successfully" });
         }else{
-            res.status(400).json({ IsSuccess: true , Data: 0 , Message: "Product Not Added" });
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Product Not Added" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
@@ -60,7 +60,7 @@ router.post("/getProducts" , async function(req,res,next){
             res.status(200).json({ IsSuccess: true , Data: record , Message: "Products Found" });
         }
         else{
-            res.status(400).json({ IsSuccess: true , Data: 0 , Message: "No Products Available" });
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "No Products Available" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
