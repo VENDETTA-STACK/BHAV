@@ -5,7 +5,7 @@ var config = require('../config')
 const mongoose = require("mongoose");
 
 router.post("/register" , async function(req,res,next){
-    const { name , mobile , lat , long , completeAddress , landSizeOwned , state , city } = req.body;
+    const { name, mobile, lat, long, completeAddress, landSizeOwned, state, city, category } = req.body;
     try {
         var record = await new customerSchema({
             name: name,
@@ -18,6 +18,7 @@ router.post("/register" , async function(req,res,next){
             landSizeOwned: landSizeOwned,
             state: state,
             city: city,
+            category: category,
         });
         let data = record.save();
         console.log(record);

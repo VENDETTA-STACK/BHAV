@@ -50,4 +50,30 @@ router.post("/getAllMandi" , async function(req,res,next){
     }
 });
 
+router.post("/getFilterMandi" , async function(req,res,next){
+    const { State , City , id } = req.body;
+    try {
+        var record = await mandiSchema.find({ 
+                                        //  State: State,
+                                         City: City
+                                       })
+                                      .populate({
+                                          path: "Product"
+                                      })
+                                      .populate({
+                                          path: "State",
+                                      })
+                                      .populate({
+                                          path: "City",
+                                      });
+          if(record){
+              res.status(200).json({ IsSuccess: true , Data: record , Message: "Mandi Data Found" });
+          }else{
+              res.status(200).json({ IsSuccess: true , Data: 0 , Message: "No Mandi Data Found" });
+          }
+      } catch (error) {
+          res.status(500).json({ IsSuccess: false , Message: error.message });
+      }
+});
+
 module.exports = router;

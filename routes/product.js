@@ -22,7 +22,7 @@ var productStorage = multer.diskStorage({
 var uploadProduct = multer({ storage: productStorage });
 
 router.post("/addProduct" , uploadProduct.single("productImage") , async function(req,res,next){
-    const { productName , productImage , yesterDayPrice , toDayPrice , priceChangeIndicator } = req.body;
+    const { productName , mandiId , productImage , yesterDayPrice , toDayPrice , priceChangeIndicator } = req.body;
     const file = req.file;
     let indiCator = yesterDayPrice - toDayPrice;
     let PriceIndi;
@@ -36,6 +36,7 @@ router.post("/addProduct" , uploadProduct.single("productImage") , async functio
     try {
         var record = await new productSchema({
             productName: productName,
+            mandiId: mandiId,
             productImage: file == undefined ? " " : file.path,
             yesterDayPrice: yesterDayPrice,
             toDayPrice: toDayPrice,
@@ -55,7 +56,26 @@ router.post("/addProduct" , uploadProduct.single("productImage") , async functio
 
 router.post("/getProducts" , async function(req,res,next){
     try {
-        var record = await productSchema.find();
+        var record = await productSchema.find()
+                                        .populate({
+                                            path: "mandiId",
+                                            select: "MandiName State City"
+                                        });
+        if(record){
+            res.status(200).json({ IsSuccess: true , Data: record , Message: "Products Found" });
+        }
+        else{
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "No Products Available" });
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false , Message: error.message });
+    }
+});
+
+router.post("/getMandiProducts" , async function(req,res,next){
+    const { mandiId } = req.body;
+    try {
+        var record = await productSchema.find({ mandiId: mandiId });
         if(record){
             res.status(200).json({ IsSuccess: true , Data: record , Message: "Products Found" });
         }

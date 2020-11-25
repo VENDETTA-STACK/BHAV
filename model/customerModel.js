@@ -7,6 +7,7 @@ const customerSchema = mongoose.Schema({
     },
     mobile: {
         type: String,
+        unique: true
     },
     location: {
        lat: {
@@ -29,6 +30,10 @@ const customerSchema = mongoose.Schema({
     city: {
         type: mongoose.Types.ObjectId,
         ref: "City",
+    },
+    category: {
+        type: String,
+        default: "Customer"
     }
 });
 
