@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 
 const productByFarmerSchema = mongoose.Schema({
-
+    orderNo: {
+        type: String
+    },
     farmerId: {
         type: mongoose.Types.ObjectId, ref: "customer",
     },
@@ -22,6 +24,15 @@ const productByFarmerSchema = mongoose.Schema({
     },
     salesPricePerKG: {
         type: Number
+    },
+    totalCost: {
+        type: Number
+    },
+    Date: {
+        type: String
+    },
+    Time: {
+        type: String
     }
 });
 

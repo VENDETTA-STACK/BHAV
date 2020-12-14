@@ -11,10 +11,10 @@ const customerSchema = mongoose.Schema({
     },
     location: {
        lat: {
-        type: String,
+        type: Number,
        },
        long: {
-        type: String
+        type: Number
        },
        completeAddress: {
         type: String
