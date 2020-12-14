@@ -13,7 +13,7 @@ router.post("/addMandi" , async function(req,res,next){
     try {
         var record = await new mandiSchema({
             MandiName: MandiName,
-            Product: Product,
+            // Product: Product,
             State: State,
             City: City,
         });
@@ -31,9 +31,6 @@ router.post("/addMandi" , async function(req,res,next){
 router.post("/getAllMandi" , async function(req,res,next){
     try {
       var record = await mandiSchema.find()
-                                    .populate({
-                                        path: "Product"
-                                    })
                                     .populate({
                                         path: "State",
                                     })
@@ -57,9 +54,6 @@ router.post("/getFilterMandi" , async function(req,res,next){
                                         //  State: State,
                                          City: City
                                        })
-                                      .populate({
-                                          path: "Product"
-                                      })
                                       .populate({
                                           path: "State",
                                       })

@@ -3,9 +3,10 @@ const mongoose = require("mongoose");
 
 /*Database Connection*/
 mongoose.connect(process.env.HOST, {
+    useNewUrlParser : true,
+    useUnifiedTopology : true,
     useFindAndModify: false,
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+    useCreateIndex: true,
   });
   
 mongoose.connection
