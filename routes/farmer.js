@@ -47,22 +47,39 @@ function getCurrentTime(){
 }
 
 router.post("/addProductByFarmer" , async function(req,res,next){
-    let { orderNo , totalCost ,farmerId , mandiId , productId , productInKG , farmerLat , farmerLng , salesPricePerKG } = req.body;
+    let { orderNo , totalCost ,farmerId , mandiId , productId , productInKG , 
+        farmerLat , farmerLng , salesPricePerKG , date , time} = req.body;
     totalCost = parseFloat(productInKG) * parseFloat(salesPricePerKG);
     try {
-        var record = await new productByFarmerSchema({
-            orderNo: getOrderNumber(),
-            farmerId: farmerId,
-            mandiId: mandiId,
-            productId: productId,
-            productInKG: productInKG,
-            farmerLat: farmerLat,
-            farmerLng: farmerLng,
-            salesPricePerKG: salesPricePerKG,
-            totalCost: totalCost,
-            Date: getCurrentDate(),
-            Time: getCurrentTime(),
-        });
+        if(req.body.type == "selLater"){
+            var record = await new productByFarmerSchema({
+                orderNo: getOrderNumber(),
+                farmerId: farmerId,
+                mandiId: mandiId,
+                productId: productId,
+                productInKG: productInKG,
+                farmerLat: farmerLat,
+                farmerLng: farmerLng,
+                salesPricePerKG: salesPricePerKG,
+                totalCost: totalCost,
+                Date: date,
+                Time: time,
+            });
+        }else{
+            record = await new productByFarmerSchema({
+                orderNo: getOrderNumber(),
+                farmerId: farmerId,
+                mandiId: mandiId,
+                productId: productId,
+                productInKG: productInKG,
+                farmerLat: farmerLat,
+                farmerLng: farmerLng,
+                salesPricePerKG: salesPricePerKG,
+                totalCost: totalCost,
+                Date: getCurrentDate(),
+                Time: getCurrentTime(),
+            });
+        }
         if(record){
             record.save();
             res.status(200).json({ IsSuccess: true , Data: [record] , Message: "Your Product Added To Mandi" });
