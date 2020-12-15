@@ -13,6 +13,7 @@
     "dotenv": "^8.2.0",
     "ejs": "~2.6.1",
     "express": "~4.16.1",
+    "geolib": "^3.3.1",
     "http-errors": "~1.6.3",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.32",
@@ -20,6 +21,7 @@
     "morgan": "~1.9.1",
     "multer": "^1.4.2",
     "node": "^15.0.1",
+    "node-geocoder": "^3.27.0",
     "nodemon": "^2.0.6"
   },
   "main": "app.js",
