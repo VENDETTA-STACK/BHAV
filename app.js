@@ -13,6 +13,7 @@ var productRouter = require('./routes/product');
 var mandiRouter = require('./routes/mandi');
 var adminRouter = require('./routes/admin');
 var farmerRouter = require('./routes/farmer');
+var companyRouter = require('./routes/company');
 
 var app = express();
 app.use(cors());
@@ -35,6 +36,7 @@ app.use('/api/product', productRouter);
 app.use('/api/mandi', mandiRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/farmer', farmerRouter);
+app.use('/api/company', companyRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

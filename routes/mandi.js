@@ -34,7 +34,7 @@ function calculatelocation(lat1, long1, lat2, long2) {
 }
 
 router.post("/addMandi" , async function(req,res,next){
-    const { MandiName , Product , State , lat , long ,completeAddress} = req.body;
+    const { MandiName , productId , State , lat , long ,completeAddress} = req.body;
     try {
         var record = await new mandiSchema({
             MandiName: MandiName,
