@@ -176,9 +176,9 @@ router.post("/getProductUpdatePrice", async function(req,res,next){
                                                     });
     
         if(record){
-            res.status(200).json({ IsSuccess: true , Data: [record] , Message: "Updated Price Added" });
+            res.status(200).json({ IsSuccess: true ,Count: record.length , Data: record , Message: "Data Found" });
         }else{
-            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Updated Price Not Added" });
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Data Not Found" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
@@ -202,6 +202,41 @@ router.post("/getMandiWiseCrop" , async function(req,res,next){
                                                     .populate({
                                                         path: "productId"
                                                     });
+        if(record){
+            res.status(200).json({ IsSuccess: true , Count: record.length ,Data: record , Message: "Data Found...!!!" });
+        }else{
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Data Not Found" });
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false , Message: error.message });
+    }
+});
+
+router.post("/getCropPriceStateWise" , async function(req,res,next){
+    const { productId , stateId } = req.body;
+    try {
+        var record = await updatedProductPriceSchema.find({
+            productId: mongoose.Types.ObjectId(productId),
+            stateId: mongoose.Types.ObjectId(stateId),
+        });
+        if(record){
+            res.status(200).json({ IsSuccess: true , Count: record.length ,Data: record , Message: "Data Found...!!!" });
+        }else{
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Data Not Found" });
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false , Message: error.message });
+    }
+});
+
+router.post("/getProducPriceMandiWise", async function(req,res,next){
+    const { stateId , mandiId , productId } = req.body;
+    try {
+        var record = await updatedProductPriceSchema.find({
+            productId: mongoose.Types.ObjectId(productId),
+            stateId: mongoose.Types.ObjectId(stateId),
+            mandiId: mongoose.Types.ObjectId(mandiId),
+        });
         if(record){
             res.status(200).json({ IsSuccess: true , Count: record.length ,Data: record , Message: "Data Found...!!!" });
         }else{
