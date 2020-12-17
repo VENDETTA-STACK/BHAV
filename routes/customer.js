@@ -5,7 +5,7 @@ var config = require('../config')
 const mongoose = require("mongoose");
 
 router.post("/register" , async function(req,res,next){
-    const { name, mobile, lat, long, completeAddress, landSizeOwned, state, city, category } = req.body;
+    const { name, mobile, lat, long, completeAddress, landSizeOwned, state, category } = req.body;
     try {
         var record = await new customerSchema({
             name: name,
@@ -17,7 +17,6 @@ router.post("/register" , async function(req,res,next){
             },
             landSizeOwned: landSizeOwned,
             state: state,
-            city: city,
             category: category,
         });
         let data = record.save();
@@ -36,8 +35,7 @@ router.post("/login" , async function(req,res,next){
     const { mobile } = req.body;
     try {
         var record = await customerSchema.find({ mobile: mobile })
-                                         .populate("state")
-                                         .populate("city");
+                                         .populate("state");
         if(record.length==1){
             res.status(200).json({ IsSuccess: true , Data: record , Message: "User LoggedIn" });
         }
@@ -52,8 +50,7 @@ router.post("/login" , async function(req,res,next){
 router.post("/getUsers", async function(req,res,next){
     try {
         var record = await customerSchema.find()
-                                         .populate("state")
-                                         .populate("city");
+                                         .populate("state");
         if(record){
             res.status(200).json({ IsSuccess: true , Count: record.length , Data: record , Message: "Users Found" });
         }

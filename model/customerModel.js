@@ -27,10 +27,10 @@ const customerSchema = mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: "State",
     },
-    city: {
-        type: mongoose.Types.ObjectId,
-        ref: "City",
-    },
+    // city: {
+    //     type: mongoose.Types.ObjectId,
+    //     ref: "City",
+    // },
     category: {
         type: String,
         default: "Customer"

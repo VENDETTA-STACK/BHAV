@@ -7,6 +7,7 @@ var productSchema = require('../model/productModel');
 var productByFarmerSchema = require('../model/farmerProduct');
 var config = require('../config')
 const mongoose = require("mongoose");
+var productStateSchema = require('../model/productStateModel');
 
 var productStorage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -22,6 +23,8 @@ var productStorage = multer.diskStorage({
 
 var uploadProduct = multer({ storage: productStorage });
 
+
+//Master Product Add
 router.post("/addProduct" , uploadProduct.single("productImage") , async function(req,res,next){
     const { productName , productImage , yesterDayPrice , toDayPrice , priceChangeIndicator } = req.body;
     const file = req.file;
@@ -62,6 +65,43 @@ router.post("/getProducts" , async function(req,res,next){
         }
         else{
             res.status(200).json({ IsSuccess: true , Data: 0 , Message: "No Products Available" });
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false , Message: error.message });
+    }
+});
+
+router.post("/addProductState", async function(req,res,next){
+    const { stateId , productId } = req.body;
+    try {
+        var record = await new productStateSchema({
+            stateId: stateId,
+            productId: productId
+        });
+        record.save();
+        if(record){
+            res.status(200).json({ IsSuccess: true , Data: [record] , Message: "Product with State Added" });
+        }else{
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Not Added" });
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false , Message: error.message });
+    }
+});
+
+router.post("/getProductState", async function(req,res,next){
+    try {
+        var record = await productStateSchema.find()
+                                             .populate({
+                                                 path: "stateId"
+                                             })
+                                             .populate({
+                                                path: "productId"
+                                            });
+        if(record){
+            res.status(200).json({ IsSuccess: true , Data: record , Message: "Products Found" });
+        }else{
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Products Not Found" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
@@ -114,5 +154,7 @@ router.post("/getProductDetails" , async function(req,res,next){
         res.status(500).json({ IsSuccess: false , Message: error.message });
     }
 });
+
+
 
 module.exports = router;

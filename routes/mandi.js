@@ -34,7 +34,7 @@ function calculatelocation(lat1, long1, lat2, long2) {
 }
 
 router.post("/addMandi" , async function(req,res,next){
-    const { MandiName , Product , State , City , lat , long ,completeAddress} = req.body;
+    const { MandiName , Product , State , lat , long ,completeAddress} = req.body;
     try {
         var record = await new mandiSchema({
             MandiName: MandiName,
@@ -44,7 +44,6 @@ router.post("/addMandi" , async function(req,res,next){
                 completeAddress : completeAddress,
             },
             State: State,
-            City: City,
         });
         if(record){
             res.status(200).json({ IsSuccess: true , Data: [record] , Message: "Mandi Added Successfully" });
@@ -74,6 +73,23 @@ router.post("/updateMandi", async function(req,res,next){
     }
 });
 
+router.post("/updateMandiProduct", async function(req,res,next){
+    const { productId , mandiId} = req.body;
+    try {
+        var updateIs = { $push: { productId: productId } }
+        var mandiData = await mandiSchema.find({ _id: mandiId });
+        
+        if(mandiData.length == 1){
+            var record = await mandiSchema.findByIdAndUpdate(mandiId,updateIs);
+            res.status(200).json({ IsSuccess: true , Data: 1 , Message: "Updated" });
+        }else{
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Mandi Not Found" });
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false , Message: error.message });
+    }
+});
+
 router.post("/getAllMandi" , async function(req,res,next){
     try {
       var record = await mandiSchema.find()
@@ -81,7 +97,7 @@ router.post("/getAllMandi" , async function(req,res,next){
                                         path: "State",
                                     })
                                     .populate({
-                                        path: "City",
+                                        path: "productId"
                                     });
         if(record){
             res.status(200).json({ IsSuccess: true , Data: record , Message: "Mandi Data Found" });
@@ -99,9 +115,6 @@ router.post("/getNearMandi" , async function(req,res,next){
       var record = await mandiSchema.find()
                                     .populate({
                                         path: "State",
-                                    })
-                                    .populate({
-                                        path: "City",
                                     });
         var mandis = []
         for(var i=0;i<record.length;i++){
@@ -132,17 +145,13 @@ router.post("/getNearMandi" , async function(req,res,next){
 });
 
 router.post("/getFilterMandi" , async function(req,res,next){
-    const { State , City , id } = req.body;
+    const { State , id } = req.body;
     try {
         var record = await mandiSchema.find({ 
-                                        //  State: State,
-                                         City: City
+                                         State: State,
                                        })
                                       .populate({
                                           path: "State",
-                                      })
-                                      .populate({
-                                          path: "City",
                                       });
           if(record){
               res.status(200).json({ IsSuccess: true , Data: record , Message: "Mandi Data Found" });

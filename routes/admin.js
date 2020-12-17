@@ -11,6 +11,9 @@ var config = require('../config')
 const mongoose = require("mongoose");
 const { Console } = require('console');
 const { populate } = require('../model/productModel');
+var updatedProductPriceSchema = require('../model/updatedPriceModel');
+var moment = require("moment-timezone");
+const e = require('express');
 
 router.post("/adminRegister" , async function(req,res,next){
     const { UserName , Password } = req.body;
@@ -113,6 +116,96 @@ router.post("/getCity" , async function(req,res,next){
         }
         else{
             res.status(200).json({ IsSuccess: true , Data: 0 , Message: "No States Available" });
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false , Message: error.message });
+    }
+});
+
+function getCurrentDate(){
+    let todayDate = moment()
+    .tz("Asia/Calcutta")
+    .format("DD MM YYYY, h:mm:ss a")
+    .split(",")[0];
+    todayDate = todayDate.split(" ");
+    todayDate = todayDate[0] + "/" + todayDate[1] + "/" + todayDate[2];
+    return todayDate;
+}
+
+function getCurrentTime(){
+    let todayTime = moment()
+    .tz("Asia/Calcutta")
+    .format("DD MM YYYY, h:mm:ss a")
+    .split(",")[1];
+    return todayTime;
+}
+
+router.post("/addProductUpdatePrice", async function(req,res,next){
+    const { stateId , mandiId , productId , lowestPrice , highestPrice } = req.body;
+    try {
+        var record = await new updatedProductPriceSchema({
+            stateId: stateId,
+            mandiId: mandiId,
+            productId: productId,
+            lowestPrice: lowestPrice,
+            highestPrice: highestPrice,
+            date: getCurrentDate(),
+        });
+        record.save();
+        if(record){
+            res.status(200).json({ IsSuccess: true , Data: [record] , Message: "Updated Price Added" });
+        }else{
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Updated Price Not Added" });
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false , Message: error.message });
+    }
+});
+
+router.post("/getProductUpdatePrice", async function(req,res,next){
+    try {
+        var record = await updatedProductPriceSchema.find()
+                                                    .populate({
+                                                        path: "stateId"
+                                                    })
+                                                    .populate({
+                                                        path: "mandiId",
+                                                    })
+                                                    .populate({
+                                                        path: "productId",
+                                                    });
+    
+        if(record){
+            res.status(200).json({ IsSuccess: true , Data: [record] , Message: "Updated Price Added" });
+        }else{
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Updated Price Not Added" });
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false , Message: error.message });
+    }
+});
+
+router.post("/getMandiWiseCrop" , async function(req,res,next){
+    const { stateId , mandiId } = req.body;
+    try {
+        var record = await updatedProductPriceSchema.find({ 
+                                                        stateId: mongoose.Types.ObjectId(stateId), 
+                                                        mandiId: mongoose.Types.ObjectId(mandiId), 
+                                                    })
+                                                    .populate({
+                                                        path: "stateId"
+                                                    })
+                                                    .populate({
+                                                        path: "mandiId",
+                                                        select: "MandiName"
+                                                    })
+                                                    .populate({
+                                                        path: "productId"
+                                                    });
+        if(record){
+            res.status(200).json({ IsSuccess: true , Count: record.length ,Data: record , Message: "Data Found...!!!" });
+        }else{
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Data Not Found" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });

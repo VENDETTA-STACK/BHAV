@@ -11,9 +11,9 @@ const mandiSchema = mongoose.Schema({
     State: {
         type: mongoose.Types.ObjectId, ref: "State",
     },
-    City:{
-        type: mongoose.Types.ObjectId, ref: "City",
-    },
+    productId: [{
+        type: mongoose.Types.ObjectId, ref: "product",
+    }],
     location: {
         lat: {
          type: Number,
@@ -25,6 +25,9 @@ const mandiSchema = mongoose.Schema({
          type: String
         }
      },
+    // City:{
+    //     type: mongoose.Types.ObjectId, ref: "City",
+    // },
 });
 
 module.exports = mongoose.model("Mandi", mandiSchema);
