@@ -44,26 +44,16 @@ router.post("/addMandi" , async function(req,res,next){
             let updateIs = { $push: { productId: productId } }
             let temp = await mandiSchema.findByIdAndUpdate(existMandi[0]._id,updateIs);  
             res.status(200).json({ IsSuccess: true , Data: 1 , Message: "Product Added To Mandi" });
-        }
-        if(productName){
-            var productData = await productSchema.find({ productName: productName });
-            if(productData.length == 1){
-                var record1 = await new mandiSchema({
-                    MandiName: MandiName,
-                    State: State
-                });        
-            }
-            console.log(productData[0]._id);
-            // console.log(productData.length);
         }else{
             var record = await new mandiSchema({
                 MandiName: MandiName,
-                location: {
-                    lat : lat,
-                    long : long,
-                    completeAddress : completeAddress,
-                },
+                // location: {
+                //     lat : lat,
+                //     long : long,
+                //     completeAddress : completeAddress,
+                // },
                 State: State,
+                productId: productId
             });
             if(record){
                 await record.save();
@@ -72,6 +62,34 @@ router.post("/addMandi" , async function(req,res,next){
                 res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Mandi Not Added" });
             }
         }
+
+        // if(productName){
+        //     var productData = await productSchema.find({ productName: productName });
+        //     if(productData.length == 1){
+        //         var record1 = await new mandiSchema({
+        //             MandiName: MandiName,
+        //             State: State
+        //         });        
+        //     }
+        //     console.log(productData[0]._id);
+        //     // console.log(productData.length);
+        // }else{
+        //     var record = await new mandiSchema({
+        //         MandiName: MandiName,
+        //         location: {
+        //             lat : lat,
+        //             long : long,
+        //             completeAddress : completeAddress,
+        //         },
+        //         State: State,
+        //     });
+        //     if(record){
+        //         await record.save();
+        //         res.status(200).json({ IsSuccess: true , Data: [record] , Message: "Mandi Added Successfully" });
+        //     }else{
+        //         res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Mandi Not Added" });
+        //     }
+        // }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
     }
@@ -203,6 +221,11 @@ router.post("/getFilterProductOnMandi" , async function(req,res,next){
       } catch (error) {
           res.status(500).json({ IsSuccess: false , Message: error.message });
       }
+});
+
+router.post("/deleteAllMandi", async function(req,res,next){
+    console.log("hello");
+    let record = await mandiSchema.deleteMany();
 });
 
 module.exports = router;
