@@ -34,22 +34,43 @@ function calculatelocation(lat1, long1, lat2, long2) {
 }
 
 router.post("/addMandi" , async function(req,res,next){
-    const { MandiName , productId , State , lat , long ,completeAddress} = req.body;
+    const { MandiName , productId , State , lat , long ,completeAddress , productName} = req.body;
     try {
-        var record = await new mandiSchema({
-            MandiName: MandiName,
-            location: {
-                lat : lat,
-                long : long,
-                completeAddress : completeAddress,
-            },
-            State: State,
-        });
-        if(record){
-            res.status(200).json({ IsSuccess: true , Data: [record] , Message: "Mandi Added Successfully" });
-            await record.save();
+        var existMandi = await mandiSchema.find({ MandiName: MandiName });
+        console.log(existMandi);
+        console.log(existMandi.length);
+        if(existMandi.length == 1){
+            console.log(existMandi[0]._id);
+            let updateIs = { $push: { productId: productId } }
+            let temp = await mandiSchema.findByIdAndUpdate(existMandi[0]._id,updateIs);  
+            res.status(200).json({ IsSuccess: true , Data: 1 , Message: "Product Added To Mandi" });
+        }
+        if(productName){
+            var productData = await productSchema.find({ productName: productName });
+            if(productData.length == 1){
+                var record1 = await new mandiSchema({
+                    MandiName: MandiName,
+                    State: State
+                });        
+            }
+            console.log(productData[0]._id);
+            // console.log(productData.length);
         }else{
-            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Mandi Not Added" });
+            var record = await new mandiSchema({
+                MandiName: MandiName,
+                location: {
+                    lat : lat,
+                    long : long,
+                    completeAddress : completeAddress,
+                },
+                State: State,
+            });
+            if(record){
+                await record.save();
+                res.status(200).json({ IsSuccess: true , Data: [record] , Message: "Mandi Added Successfully" });
+            }else{
+                res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Mandi Not Added" });
+            }
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
@@ -74,8 +95,9 @@ router.post("/updateMandi", async function(req,res,next){
 });
 
 router.post("/updateMandiProduct", async function(req,res,next){
-    const { productId , mandiId} = req.body;
+    const { productId , mandiId } = req.body;
     try {
+        
         var updateIs = { $push: { productId: productId } }
         var mandiData = await mandiSchema.find({ _id: mandiId });
         

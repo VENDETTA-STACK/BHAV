@@ -202,7 +202,7 @@ router.post("/getMandiWiseCrop" , async function(req,res,next){
                                                     .populate({
                                                         path: "productId"
                                                     });
-        if(record){
+        if(record.length > 0){
             res.status(200).json({ IsSuccess: true , Count: record.length ,Data: record , Message: "Data Found...!!!" });
         }else{
             res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Data Not Found" });
