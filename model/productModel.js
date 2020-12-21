@@ -11,12 +11,6 @@ const productSchema = mongoose.Schema({
     productImage: {
         type: String,
     },
-    yesterDayPrice: {
-        type: Number,
-    },
-    toDayPrice:{
-        type: Number,
-    },
     priceChangeIndicator: {
         type: Number,
     },

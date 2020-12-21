@@ -10,6 +10,7 @@ var config = require('../config')
 const mongoose = require("mongoose");
 const geolib = require("geolib");
 var NodeGeocoder = require('node-geocoder');
+var updatedPriceModel = require('../model/updatedPriceModel');
 
 function calculatelocation(lat1, long1, lat2, long2) {
     if (lat1 == 0 || long1 == 0) {
@@ -221,6 +222,46 @@ router.post("/getFilterProductOnMandi" , async function(req,res,next){
       } catch (error) {
           res.status(500).json({ IsSuccess: false , Message: error.message });
       }
+});
+
+router.post("/getMandiProductPrice" , async function(req,res,next){
+    const { mandiId } = req.body;
+    try {
+        var record = await mandiSchema.find({ _id: mandiId })
+        // console.log(record[0].productId);
+        let products = record[0].productId;
+        // console.log(products.length);
+        let productPriceDataIs = [];
+        for(let i in products){
+            if(products[i]){
+                var productsPriceData = await updatedPriceModel.find({
+                           productId: products[i],
+                           mandiId: mandiId,      
+                })
+                .populate({
+                    path: "productId"
+                })
+                .populate({
+                    path: "stateId"
+                })
+                .populate({
+                    path: "mandiId",
+                    select: "MandiName",
+                });
+                productPriceDataIs.push(productsPriceData);
+            }
+        }
+        if(productPriceDataIs.length > 0){
+            res.status(200).json({ IsSuccess: true , Count: productPriceDataIs.length ,
+                                Data: productPriceDataIs , Message: "Data Found" });
+        }else{
+            res.status(200).json({
+                IsSuccess: true , Data: 0 , Message: "Data Not Found"
+            });
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false , Message: error.message });
+    }
 });
 
 router.post("/deleteAllMandi", async function(req,res,next){

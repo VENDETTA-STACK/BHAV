@@ -8,6 +8,7 @@ var productByFarmerSchema = require('../model/farmerProduct');
 var config = require('../config')
 const mongoose = require("mongoose");
 var productStateSchema = require('../model/productStateModel');
+var mandiSchema = require('../model/mandiModel');
 
 var productStorage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -26,23 +27,21 @@ var uploadProduct = multer({ storage: productStorage });
 
 //Master Product Add
 router.post("/addProduct" , uploadProduct.single("productImage") , async function(req,res,next){
-    const { productName , productImage , yesterDayPrice , toDayPrice , priceChangeIndicator } = req.body;
+    const { productName , productImage , priceChangeIndicator } = req.body;
     const file = req.file;
-    let indiCator = yesterDayPrice - toDayPrice;
-    let PriceIndi;
-    if(indiCator > 0){
-        PriceIndi = 1; //increase
-    }else if(indiCator < 0){
-        PriceIndi = -1; // Same
-    }else{
-        PriceIndi = 0; // decrease
-    }
+    // let indiCator = yesterDayPrice - toDayPrice;
+    // let PriceIndi;
+    // if(indiCator > 0){
+    //     PriceIndi = 1; //increase
+    // }else if(indiCator < 0){
+    //     PriceIndi = -1; // Same
+    // }else{
+    //     PriceIndi = 0; // decrease
+    // }
     try {
         var record = await new productSchema({
             productName: productName,
             productImage: file == undefined ? " " : file.path,
-            yesterDayPrice: yesterDayPrice,
-            toDayPrice: toDayPrice,
             priceChangeIndicator: PriceIndi,
         });
         let data = record.save();
@@ -111,16 +110,14 @@ router.post("/getProductState", async function(req,res,next){
 router.post("/getMandiProducts" , async function(req,res,next){
     const { mandiId } = req.body;
     try {
-        var record = await productByFarmerSchema.find({ mandiId: mandiId })
-                                                .populate({
-                                                    path: "farmerId",
-                                                })
-                                                .populate({
-                                                    path: "mandiId",
-                                                })
-                                                .populate({
-                                                    path: "productId",
-                                                });
+        
+        var record = await mandiSchema.find({ _id: mandiId })
+                                      .populate({
+                                          path: "productId",
+                                      })
+                                      .populate({
+                                          path: "State"
+                                      });
         if(record){
             res.status(200).json({ IsSuccess: true , Count: record.length , Data: record , Message: "Products Found" });
         }

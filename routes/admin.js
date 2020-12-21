@@ -14,6 +14,7 @@ const { populate } = require('../model/productModel');
 var updatedProductPriceSchema = require('../model/updatedPriceModel');
 var moment = require("moment-timezone");
 const e = require('express');
+const { route } = require('./product');
 
 router.post("/adminRegister" , async function(req,res,next){
     const { UserName , Password } = req.body;
@@ -141,7 +142,7 @@ function getCurrentTime(){
 }
 
 router.post("/addProductUpdatePrice", async function(req,res,next){
-    const { stateId , mandiId , productId , lowestPrice , highestPrice } = req.body;
+    const { stateId ,date ,mandiId , productId , lowestPrice , highestPrice } = req.body;
     try {
         var record = await new updatedProductPriceSchema({
             stateId: stateId,
@@ -149,7 +150,7 @@ router.post("/addProductUpdatePrice", async function(req,res,next){
             productId: productId,
             lowestPrice: lowestPrice,
             highestPrice: highestPrice,
-            date: getCurrentDate(),
+            date: date,
         });
         record.save();
         if(record){
@@ -216,11 +217,57 @@ router.post("/getCropPriceStateWise" , async function(req,res,next){
     const { productId , stateId } = req.body;
     try {
         var record = await updatedProductPriceSchema.find({
-            productId: mongoose.Types.ObjectId(productId),
-            stateId: mongoose.Types.ObjectId(stateId),
-        });
-        if(record){
-            res.status(200).json({ IsSuccess: true , Count: record.length ,Data: record , Message: "Data Found...!!!" });
+                                        productId: mongoose.Types.ObjectId(productId),
+                                        stateId: mongoose.Types.ObjectId(stateId),
+                                        date: getCurrentDate(),
+                                    })
+                                    .populate({
+                                        path: "stateId"
+                                    })
+                                    .populate({
+                                        path: "productId"
+                                    })
+                                    .populate({
+                                        path: "mandiId",
+                                        select: "MandiName"
+                                    });
+        let dataIs = [];
+        // console.log(`Current Date : ${getCurrentDate()}`)
+        for(let i in record){
+            // console.log(record[i].date);
+            let dateList = record[i].date.split("/");
+            // console.log(dateList[0]);
+            let yesterdayDate = parseFloat(dateList[0] - 1) + "/" + dateList[1] + "/" + dateList[2];
+            console.log(yesterdayDate);
+            let yesterDayPriceIs = await updatedProductPriceSchema.find({
+                                        $and : [
+                                            {productId: record[i].productId._id},
+                                            {stateId: record[i].stateId._id},
+                                            {mandiId: record[i].mandiId._id},
+                                            {date: yesterdayDate},
+                                        ]
+            });
+            console.log(" le :"+yesterDayPriceIs.length);
+            // console.log(" l :"+yesterDayPriceIs[i]);
+            console.log(`${i} : ${yesterDayPriceIs.length}`);
+            // console.log(yesterDayPriceIs.length);
+            let priceIs = 0;
+            if(yesterDayPriceIs.length != 0){
+                // priceIs = 0; 
+                console.log("yes");
+                priceIs = yesterDayPriceIs[0].highestPrice;
+            }else{
+                console.log("no");
+                priceIs = 0;
+            }
+            let temp = {
+                today: record[i],
+                yesterDayPrice : priceIs
+            }
+            dataIs.push(temp);    
+        }
+        if(dataIs.length > 0){
+            res.status(200).json({ IsSuccess: true , Count: dataIs.length ,Data: dataIs , Message: "Data Found...!!!" });
         }else{
             res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Data Not Found" });
         }
@@ -241,6 +288,31 @@ router.post("/getProducPriceMandiWise", async function(req,res,next){
             res.status(200).json({ IsSuccess: true , Count: record.length ,Data: record , Message: "Data Found...!!!" });
         }else{
             res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Data Not Found" });
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false , Message: error.message });
+    }
+});
+
+router.post("/getCropPriceInAllMandi", async function(req,res,next){
+    const { productId } = req.body;
+    try {
+        var productPriceDataIs = await updatedProductPriceSchema.find({ productId: productId })
+                                                                .populate({
+                                                                    path: "productId"
+                                                                })
+                                                                .populate({
+                                                                    path: "mandiId",
+                                                                    select: "MandiName"
+                                                                })
+                                                                .populate({
+                                                                    path: "stateId"
+                                                                });
+        // console.log(productPriceDataIs);
+        if(productPriceDataIs.length > 0){
+            res.status(200).json({ IsSuccess: true , Count: productPriceDataIs.length ,Data: productPriceDataIs , Message: "Data Found...!!!" });
+        }else{
+            res.status(200).json({ IsSuccess: true ,Data: 0 , Message: "Data Not Found...!!!" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
