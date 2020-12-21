@@ -230,25 +230,29 @@ router.post("/getMandiProductPrice" , async function(req,res,next){
         var record = await mandiSchema.find({ _id: mandiId })
         // console.log(record[0].productId);
         let products = record[0].productId;
-        // console.log(products.length);
+        console.log(products);
+        console.log(products.length);
+
         let productPriceDataIs = [];
         for(let i in products){
             if(products[i]){
                 var productsPriceData = await updatedPriceModel.find({
                            productId: products[i],
                            mandiId: mandiId,      
-                })
-                .populate({
-                    path: "productId"
-                })
-                .populate({
-                    path: "stateId"
-                })
-                .populate({
-                    path: "mandiId",
-                    select: "MandiName",
-                });
-                productPriceDataIs.push(productsPriceData[0]);
+                        })
+                        .populate({
+                            path: "productId"
+                        })
+                        .populate({
+                            path: "stateId"
+                        })
+                        .populate({
+                            path: "mandiId",
+                            select: "MandiName",
+                        });
+                if(productsPriceData.length > 0){
+                    productPriceDataIs.push(productsPriceData[0]);
+                }   
             }
         }
         // console.log(productPriceDataIs.length);
