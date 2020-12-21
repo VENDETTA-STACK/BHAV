@@ -248,14 +248,14 @@ router.post("/getMandiProductPrice" , async function(req,res,next){
                     path: "mandiId",
                     select: "MandiName",
                 });
-                productPriceDataIs.push(productsPriceData);
+                productPriceDataIs.push(productsPriceData[0]);
             }
         }
         // console.log(productPriceDataIs.length);
-        // console.log(productPriceDataIs[0]);
+        console.log(productPriceDataIs);
         if(productPriceDataIs.length > 0){
             res.status(200).json({ IsSuccess: true , Count: productPriceDataIs.length ,
-                                Data: productPriceDataIs[0] , Message: "Data Found" });
+                                Data: productPriceDataIs , Message: "Data Found" });
         }else{
             res.status(200).json({
                 IsSuccess: true , Data: 0 , Message: "Data Not Found"
