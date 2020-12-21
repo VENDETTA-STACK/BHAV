@@ -150,7 +150,7 @@ router.post("/addProductUpdatePrice", async function(req,res,next){
             productId: productId,
             lowestPrice: lowestPrice,
             highestPrice: highestPrice,
-            date: date,
+            date: date == undefined ? getCurrentDate() : date,
         });
         record.save();
         if(record){
@@ -171,6 +171,7 @@ router.post("/getProductUpdatePrice", async function(req,res,next){
                                                     })
                                                     .populate({
                                                         path: "mandiId",
+                                                        select: "MandiName"
                                                     })
                                                     .populate({
                                                         path: "productId",
