@@ -118,6 +118,7 @@ router.post("/getMandiProducts" , async function(req,res,next){
                                       .populate({
                                           path: "State"
                                       });
+        // console.log(record.length);
         if(record.length > 0){
             res.status(200).json({ IsSuccess: true , Count: record.length , Data: record , Message: "Products Found" });
         }
