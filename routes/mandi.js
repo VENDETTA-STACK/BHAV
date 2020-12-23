@@ -256,10 +256,52 @@ router.post("/getMandiProductPrice" , async function(req,res,next){
             }
         }
         // console.log(productPriceDataIs.length);
-        console.log(productPriceDataIs);
-        if(productPriceDataIs.length > 0){
-            res.status(200).json({ IsSuccess: true , Count: productPriceDataIs.length ,
-                                Data: productPriceDataIs , Message: "Data Found" });
+        // console.log(productPriceDataIs);
+        let dataIs = [];
+        // console.log(`Current Date : ${getCurrentDate()}`)
+        for(let i in productsPriceData){
+            // console.log(productsPriceData[i].date);
+            let dateList = productsPriceData[i].date.split("/");
+            // console.log(dateList[0]);
+            let yesterdayDate = parseFloat(dateList[0] - 1) + "/" + dateList[1] + "/" + dateList[2];
+            console.log(yesterdayDate);
+            let yesterDayPriceIs = await updatedPriceModel.find({
+                                        $and : [
+                                            {productId: productsPriceData[i].productId._id},
+                                            {stateId: productsPriceData[i].stateId._id},
+                                            {mandiId: productsPriceData[i].mandiId._id},
+                                            {date: yesterdayDate},
+                                        ]
+            });
+            console.log(" le :"+yesterDayPriceIs.length);
+            // console.log(" l :"+yesterDayPriceIs[i]);
+            console.log(`${i} : ${yesterDayPriceIs.length}`);
+            // console.log(yesterDayPriceIs.length);
+            let yesterDayHigh = 0;
+            let yesterDayLow = 0;
+            if(yesterDayPriceIs.length != 0){
+                // priceIs = 0; 
+                console.log("yes");
+                yesterDayHigh = yesterDayPriceIs[0].highestPrice;
+                yesterDayLow = yesterDayPriceIs[0].lowestPrice;
+            }else{
+                console.log("no");
+                yesterDayHigh = 0;
+                yesterDayLow = 0
+            }
+            let temp = {
+                today: productsPriceData[i],
+                yesterDay: {
+                    yesterDayHighest : yesterDayHigh,
+                    yesterDayLowest : yesterDayLow
+                }
+            }
+            dataIs.push(temp);    
+        }
+        // console.log(dataIs);
+        if(dataIs.length > 0){
+            res.status(200).json({ IsSuccess: true , Count: dataIs.length ,
+                                Data: dataIs , Message: "Data Found" });
         }else{
             res.status(200).json({
                 IsSuccess: true , Data: 0 , Message: "Data Not Found"
