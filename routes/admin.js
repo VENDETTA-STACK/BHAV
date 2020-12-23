@@ -142,21 +142,45 @@ function getCurrentTime(){
 }
 
 router.post("/addProductUpdatePrice", async function(req,res,next){
-    const { stateId ,date ,mandiId , productId , lowestPrice , highestPrice } = req.body;
+    const { stateId ,date ,mandiId , productId , highestPrice , yesterDayHigh } = req.body;
     try {
-        var record = await new updatedProductPriceSchema({
+        let existRecord = await updatedProductPriceSchema.find({
             stateId: stateId,
             mandiId: mandiId,
             productId: productId,
-            lowestPrice: lowestPrice,
-            highestPrice: highestPrice,
-            date: date == undefined ? getCurrentDate() : date,
         });
-        record.save();
-        if(record){
-            res.status(200).json({ IsSuccess: true , Data: [record] , Message: "Updated Price Added" });
+        
+        console.log(existRecord.length);
+        if(existRecord.length > 0){
+            let yesterDayLowest = existRecord[0].lowestPrice;
+            let yesterDayHighest = existRecord[0].highestPrice;
+            console.log("Exist Data Updation");
+            console.log(existRecord[0]._id);
+            let updateIs = {
+                stateId: stateId,
+                mandiId: mandiId,
+                productId: productId,
+                highestPrice: highestPrice,
+                date: date == undefined ? getCurrentDate() : date,
+                yesterDayHigh : yesterDayHighest,
+            }
+            var updateRecord = await updatedProductPriceSchema.findByIdAndUpdate(existRecord[0]._id,updateIs);
+            res.status(200).json({ IsSuccess: true , Data: 1 , Message: "Product Price Updated" });
         }else{
-            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Updated Price Not Added" });
+            var record = await new updatedProductPriceSchema({
+                stateId: stateId,
+                mandiId: mandiId,
+                productId: productId,
+                highestPrice: highestPrice,
+                date: date == undefined ? getCurrentDate() : date,
+                yesterDayHigh: 0,
+            });
+            record.save();
+            if(record){
+                res.status(200).json({ IsSuccess: true , Data: [record] , Message: "Product Price Added" });
+            }else{
+                res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Product Price Not Added" });
+            }
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
@@ -220,7 +244,8 @@ router.post("/getCropPriceStateWise" , async function(req,res,next){
         var record = await updatedProductPriceSchema.find({
                                         productId: mongoose.Types.ObjectId(productId),
                                         stateId: mongoose.Types.ObjectId(stateId),
-                                        date: "22/12/2020",
+                                        date: getCurrentDate()
+                                        // date: "24/12/2020"
                                     })
                                     .populate({
                                         path: "stateId"
@@ -232,49 +257,50 @@ router.post("/getCropPriceStateWise" , async function(req,res,next){
                                         path: "mandiId",
                                         select: "MandiName"
                                     });
-        let dataIs = [];
-        // console.log(`Current Date : ${getCurrentDate()}`)
-        for(let i in record){
-            // console.log(record[i].date);
-            let dateList = record[i].date.split("/");
-            // console.log(dateList[0]);
-            let yesterdayDate = parseFloat(dateList[0] - 1) + "/" + dateList[1] + "/" + dateList[2];
-            console.log(yesterdayDate);
-            let yesterDayPriceIs = await updatedProductPriceSchema.find({
-                                        $and : [
-                                            {productId: record[i].productId._id},
-                                            {stateId: record[i].stateId._id},
-                                            {mandiId: record[i].mandiId._id},
-                                            {date: yesterdayDate},
-                                        ]
-            });
-            console.log(" le :"+yesterDayPriceIs.length);
-            // console.log(" l :"+yesterDayPriceIs[i]);
-            console.log(`${i} : ${yesterDayPriceIs.length}`);
-            // console.log(yesterDayPriceIs.length);
-            let yesterDayHigh = 0;
-            let yesterDayLow = 0;
-            if(yesterDayPriceIs.length != 0){
-                // priceIs = 0; 
-                console.log("yes");
-                yesterDayHigh = yesterDayPriceIs[0].highestPrice;
-                yesterDayLow = yesterDayPriceIs[0].lowestPrice;
-            }else{
-                console.log("no");
-                yesterDayHigh = 0;
-                yesterDayLow = 0
-            }
-            let temp = {
-                today: record[i],
-                yesterDay: {
-                    yesterDayHighest : yesterDayHigh,
-                    yesterDayLowest : yesterDayLow
-                }
-            }
-            dataIs.push(temp);    
-        }
-        if(dataIs.length > 0){
-            res.status(200).json({ IsSuccess: true , Count: dataIs.length ,Data: dataIs , Message: "Data Found...!!!" });
+            console.log(record);
+        // let dataIs = [];
+        // // console.log(`Current Date : ${getCurrentDate()}`)
+        // for(let i in record){
+        //     // console.log(record[i].date);
+        //     let dateList = record[i].date.split("/");
+        //     // console.log(dateList[0]);
+        //     let yesterdayDate = parseFloat(dateList[0] - 1) + "/" + dateList[1] + "/" + dateList[2];
+        //     console.log(yesterdayDate);
+        //     let yesterDayPriceIs = await updatedProductPriceSchema.find({
+        //                                 $and : [
+        //                                     {productId: record[i].productId._id},
+        //                                     {stateId: record[i].stateId._id},
+        //                                     {mandiId: record[i].mandiId._id},
+        //                                     {date: yesterdayDate},
+        //                                 ]
+        //     });
+        //     console.log(" le :"+yesterDayPriceIs.length);
+        //     // console.log(" l :"+yesterDayPriceIs[i]);
+        //     console.log(`${i} : ${yesterDayPriceIs.length}`);
+        //     // console.log(yesterDayPriceIs.length);
+        //     let yesterDayHigh = 0;
+        //     let yesterDayLow = 0;
+        //     if(yesterDayPriceIs.length != 0){
+        //         // priceIs = 0; 
+        //         console.log("yes");
+        //         yesterDayHigh = yesterDayPriceIs[0].highestPrice;
+        //         yesterDayLow = yesterDayPriceIs[0].lowestPrice;
+        //     }else{
+        //         console.log("no");
+        //         yesterDayHigh = 0;
+        //         yesterDayLow = 0
+        //     }
+        //     let temp = {
+        //         today: record[i],
+        //         yesterDay: {
+        //             yesterDayHighest : yesterDayHigh,
+        //             yesterDayLowest : yesterDayLow
+        //         }
+        //     }
+        //     dataIs.push(temp);    
+        // }
+        if(record.length > 0){
+            res.status(200).json({ IsSuccess: true , Count: record.length ,Data: record , Message: "Data Found...!!!" });
         }else{
             res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Data Not Found" });
         }
@@ -316,50 +342,54 @@ router.post("/getCropPriceInAllMandi", async function(req,res,next){
                                                                     path: "stateId"
                                                                 });
         // console.log(productPriceDataIs);
-        let dataIs = [];
-        // console.log(`Current Date : ${getCurrentDate()}`)
-        for(let i in productPriceDataIs){
-            // console.log(productPriceDataIs[i].date);
-            let dateList = productPriceDataIs[i].date.split("/");
-            // console.log(dateList[0]);
-            let yesterdayDate = parseFloat(dateList[0] - 1) + "/" + dateList[1] + "/" + dateList[2];
-            console.log(yesterdayDate);
-            let yesterDayPriceIs = await updatedProductPriceSchema.find({
-                                        $and : [
-                                            {productId: productPriceDataIs[i].productId._id},
-                                            {stateId: productPriceDataIs[i].stateId._id},
-                                            {mandiId: productPriceDataIs[i].mandiId._id},
-                                            {date: yesterdayDate},
-                                        ]
-            });
-            console.log(" le :"+yesterDayPriceIs.length);
-            // console.log(" l :"+yesterDayPriceIs[i]);
-            console.log(`${i} : ${yesterDayPriceIs.length}`);
-            // console.log(yesterDayPriceIs.length);
-            let yesterDayHigh = 0;
-            let yesterDayLow = 0;
-            if(yesterDayPriceIs.length != 0){
-                // priceIs = 0; 
-                console.log("yes");
-                yesterDayHigh = yesterDayPriceIs[0].highestPrice;
-                yesterDayLow = yesterDayPriceIs[0].lowestPrice;
-            }else{
-                console.log("no");
-                yesterDayHigh = 0;
-                yesterDayLow = 0
-            }
-            let temp = {
-                today: productPriceDataIs[i],
-                yesterDay: {
-                    yesterDayHighest : yesterDayHigh,
-                    yesterDayLowest : yesterDayLow
-                }
-            }
-            dataIs.push(temp);    
-        }
-        console.log(dataIs);
-        if(dataIs.length > 0){
-            res.status(200).json({ IsSuccess: true , Count: dataIs.length ,Data: dataIs , Message: "Data Found...!!!" });
+        // let dataIs = [];
+        // // console.log(`Current Date : ${getCurrentDate()}`)
+        // for(let i in productPriceDataIs){
+        //     // console.log(productPriceDataIs[i].date);
+        //     let dateList = productPriceDataIs[i].date.split("/");
+        //     // console.log(dateList[0]);
+        //     let yesterdayDate = parseFloat(dateList[0] - 1) + "/" + dateList[1] + "/" + dateList[2];
+        //     console.log(yesterdayDate);
+        //     let yesterDayPriceIs = await updatedProductPriceSchema.find({
+        //                                 $and : [
+        //                                     {productId: productPriceDataIs[i].productId._id},
+        //                                     {stateId: productPriceDataIs[i].stateId._id},
+        //                                     {mandiId: productPriceDataIs[i].mandiId._id},
+        //                                     {date: yesterdayDate},
+        //                                 ]
+        //     });
+        //     console.log(" le :"+yesterDayPriceIs.length);
+        //     // console.log(" l :"+yesterDayPriceIs[i]);
+        //     console.log(`${i} : ${yesterDayPriceIs.length}`);
+        //     // console.log(yesterDayPriceIs.length);
+        //     let yesterDayHigh = 0;
+        //     let yesterDayLow = 0;
+        //     if(yesterDayPriceIs.length != 0){
+        //         // priceIs = 0; 
+        //         console.log("yes");
+        //         yesterDayHigh = yesterDayPriceIs[0].highestPrice;
+        //         yesterDayLow = yesterDayPriceIs[0].lowestPrice;
+        //     }else{
+        //         console.log("no");
+        //         yesterDayHigh = 0;
+        //         yesterDayLow = 0
+        //     }
+        //     let temp = {
+        //         today: productPriceDataIs[i],
+        //         yesterDay: {
+        //             yesterDayHighest : yesterDayHigh,
+        //             yesterDayLowest : yesterDayLow
+        //         }
+        //     }
+        //     dataIs.push(temp);    
+        // }
+        // console.log(dataIs);
+        if(productPriceDataIs.length > 0){
+            res.status(200).json({ IsSuccess: true , 
+                            Count: productPriceDataIs.length,
+                            Data: productPriceDataIs, 
+                            Message: "Data Found...!!!" 
+                        });
         }else{
             res.status(200).json({ IsSuccess: true ,Data: 0 , Message: "Data Not Found...!!!" });
         }
@@ -367,5 +397,9 @@ router.post("/getCropPriceInAllMandi", async function(req,res,next){
         res.status(500).json({ IsSuccess: false , Message: error.message });
     }
 });
+
+// router.post("/addTestData" , async function(req,res,next){
+//     let record = await 
+// });
 
 module.exports = router;

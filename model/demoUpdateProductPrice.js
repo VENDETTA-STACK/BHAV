@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const updatedProductPriceSchema = mongoose.Schema({
+const demoUpdatedProductPriceSchema = mongoose.Schema({
     stateId: {
         type: mongoose.Types.ObjectId, ref: "State",
     },
@@ -27,4 +27,4 @@ const updatedProductPriceSchema = mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model("updateProductPrice", updatedProductPriceSchema);
+module.exports = mongoose.model("demoUpdateProductPrice", demoUpdatedProductPriceSchema);

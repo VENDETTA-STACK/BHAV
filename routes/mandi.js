@@ -11,6 +11,8 @@ const mongoose = require("mongoose");
 const geolib = require("geolib");
 var NodeGeocoder = require('node-geocoder');
 var updatedPriceModel = require('../model/updatedPriceModel');
+var demoSchema = require('../model/demoUpdateProductPrice');
+var moment = require("moment-timezone");
 
 function calculatelocation(lat1, long1, lat2, long2) {
     if (lat1 == 0 || long1 == 0) {
@@ -230,8 +232,8 @@ router.post("/getMandiProductPrice" , async function(req,res,next){
         var record = await mandiSchema.find({ _id: mandiId })
         // console.log(record[0].productId);
         let products = record[0].productId;
-        console.log(products);
-        console.log(products.length);
+        // console.log(products);
+        // console.log(products.length);
 
         let productPriceDataIs = [];
         for(let i in products){
@@ -257,51 +259,51 @@ router.post("/getMandiProductPrice" , async function(req,res,next){
         }
         // console.log(productPriceDataIs.length);
         // console.log(productPriceDataIs);
-        let dataIs = [];
-        // console.log(`Current Date : ${getCurrentDate()}`)
-        for(let i in productsPriceData){
-            // console.log(productsPriceData[i].date);
-            let dateList = productsPriceData[i].date.split("/");
-            // console.log(dateList[0]);
-            let yesterdayDate = parseFloat(dateList[0] - 1) + "/" + dateList[1] + "/" + dateList[2];
-            console.log(yesterdayDate);
-            let yesterDayPriceIs = await updatedPriceModel.find({
-                                        $and : [
-                                            {productId: productsPriceData[i].productId._id},
-                                            {stateId: productsPriceData[i].stateId._id},
-                                            {mandiId: productsPriceData[i].mandiId._id},
-                                            {date: yesterdayDate},
-                                        ]
-            });
-            console.log(" le :"+yesterDayPriceIs.length);
-            // console.log(" l :"+yesterDayPriceIs[i]);
-            console.log(`${i} : ${yesterDayPriceIs.length}`);
-            // console.log(yesterDayPriceIs.length);
-            let yesterDayHigh = 0;
-            let yesterDayLow = 0;
-            if(yesterDayPriceIs.length != 0){
-                // priceIs = 0; 
-                console.log("yes");
-                yesterDayHigh = yesterDayPriceIs[0].highestPrice;
-                yesterDayLow = yesterDayPriceIs[0].lowestPrice;
-            }else{
-                console.log("no");
-                yesterDayHigh = 0;
-                yesterDayLow = 0
-            }
-            let temp = {
-                today: productsPriceData[i],
-                yesterDay: {
-                    yesterDayHighest : yesterDayHigh,
-                    yesterDayLowest : yesterDayLow
-                }
-            }
-            dataIs.push(temp);    
-        }
+        // let dataIs = [];
+        // // console.log(`Current Date : ${getCurrentDate()}`)
+        // for(let i in productPriceDataIs){
+        //     // console.log(productPriceDataIs[i].date);
+        //     let dateList = productPriceDataIs[i].date.split("/");
+        //     // console.log(dateList[0]);
+        //     let yesterdayDate = parseFloat(dateList[0] - 1) + "/" + dateList[1] + "/" + dateList[2];
+        //     console.log(yesterdayDate);
+        //     let yesterDayPriceIs = await updatedPriceModel.find({
+        //                                 $and : [
+        //                                     {productId: productPriceDataIs[i].productId._id},
+        //                                     {stateId: productPriceDataIs[i].stateId._id},
+        //                                     {mandiId: productPriceDataIs[i].mandiId._id},
+        //                                     {date: yesterdayDate},
+        //                                 ]
+        //     });
+        //     console.log(" le :"+yesterDayPriceIs.length);
+        //     // console.log(" l :"+yesterDayPriceIs[i]);
+        //     console.log(`${i} : ${yesterDayPriceIs.length}`);
+        //     // console.log(yesterDayPriceIs.length);
+        //     let yesterDayHigh = 0;
+        //     let yesterDayLow = 0;
+        //     if(yesterDayPriceIs.length != 0){
+        //         // priceIs = 0; 
+        //         console.log("yes");
+        //         yesterDayHigh = yesterDayPriceIs[0].highestPrice;
+        //         yesterDayLow = yesterDayPriceIs[0].lowestPrice;
+        //     }else{
+        //         console.log("no");
+        //         yesterDayHigh = 0;
+        //         yesterDayLow = 0
+        //     }
+        //     let temp = {
+        //         today: productPriceDataIs[i],
+        //         yesterDay: {
+        //             yesterDayHighest : yesterDayHigh,
+        //             yesterDayLowest : yesterDayLow
+        //         }
+        //     }
+        //     dataIs.push(temp);    
+        // }
         // console.log(dataIs);
-        if(dataIs.length > 0){
-            res.status(200).json({ IsSuccess: true , Count: dataIs.length ,
-                                Data: dataIs , Message: "Data Found" });
+        if(productPriceDataIs.length > 0){
+            res.status(200).json({ IsSuccess: true , Count: productPriceDataIs.length ,
+                                Data: productPriceDataIs , Message: "Data Found" });
         }else{
             res.status(200).json({
                 IsSuccess: true , Data: 0 , Message: "Data Not Found"
@@ -311,6 +313,57 @@ router.post("/getMandiProductPrice" , async function(req,res,next){
         res.status(500).json({ IsSuccess: false , Message: error.message });
     }
 });
+
+function getCurrentDate(){
+    let todayDate = moment()
+    .tz("Asia/Calcutta")
+    .format("DD MM YYYY, h:mm:ss a")
+    .split(",")[0];
+    todayDate = todayDate.split(" ");
+    todayDate = todayDate[0] + "/" + todayDate[1] + "/" + todayDate[2];
+    return todayDate;
+}
+
+
+router.post("/insertAllMandiData", async function(req,res,next){
+    let allMandi = await mandiSchema.find();
+    console.log(allMandi.length);
+    let k = 0;
+    for(let i=0;i<allMandi.length;i++){
+        // console.log(allMandi[i].productId);
+        let productList = allMandi[i].productId;
+        let mandiId = allMandi[i]._id;
+        let StateId = "5fabbe4fd652567fdb848e3a";
+        // let productsId = []
+        // console.log(mandiId,StateId);
+        for(j in allMandi[i].productId){
+            // console.log(productList[j]);
+            let data = await new updatedPriceModel({
+                stateId: StateId,
+                mandiId: mandiId,
+                productId: productList[j],
+                highestPrice: 0,
+                yesterDayHigh: 0,
+                date: getCurrentDate(),
+           })
+           console.log(data);
+           data.save();
+           k = k + 1;
+           console.log(k);
+        }
+        // console.log(a);
+    }
+    res.status(200).json("Data Added");
+});
+
+// router.post("/updateMandiCrops", async function(req,res,next){
+//     const aa = req.body;
+//     let list = ["5fdc9fed13b7130025988e8c","5fdc9ffe13b7130025988e8e","5fdc9ede13b7130025988e86","5fdc9ee813b7130025988e87","5fdc9f1713b7130025988e8a"];
+//     // for(let i in list)
+//     let updateIs = { $push: { productId: list } }
+//     let record = await mandiSchema.findByIdAndUpdate(aa,updateIs)
+//     res.status(200).json("Done...............>!!!!!!!!!");
+// });
 
 router.post("/deleteAllMandi", async function(req,res,next){
     console.log("hello");
