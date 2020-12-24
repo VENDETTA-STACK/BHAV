@@ -22,10 +22,13 @@ const productByFarmerSchema = mongoose.Schema({
     farmerLng: {
         type: Number
     },
-    salesPricePerKG: {
+    // salesPricePerKG: {
+    //     type: Number
+    // },
+    totalCost: {
         type: Number
     },
-    totalCost: {
+    profit: {
         type: Number
     },
     Date: {

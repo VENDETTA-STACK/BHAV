@@ -21,7 +21,7 @@ const mandiSchema = mongoose.Schema({
         completeAddress: {
          type: String
         }
-     },
+    },
     // City:{
     //     type: mongoose.Types.ObjectId, ref: "City",
     // },

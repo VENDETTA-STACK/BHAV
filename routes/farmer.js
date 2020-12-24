@@ -8,6 +8,7 @@ var productByFarmerSchema = require('../model/farmerProduct');
 var config = require('../config')
 const mongoose = require("mongoose");
 var moment = require("moment-timezone");
+const { populate } = require('../model/productModel');
 
 var productStorage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -48,8 +49,8 @@ function getCurrentTime(){
 
 router.post("/addProductForSale" , async function(req,res,next){
     let { orderNo , totalCost ,farmerId , mandiId , productId , productInKG , 
-        farmerLat , farmerLng , salesPricePerKG , date , time} = req.body;
-    totalCost = parseFloat(productInKG) * parseFloat(salesPricePerKG);
+        farmerLat , farmerLng , profit , date , time} = req.body;
+    // totalCost = parseFloat(productInKG) * parseFloat(salesPricePerKG);
     try {
         if(req.body.type == "selLater"){
             var record = await new productByFarmerSchema({
@@ -60,8 +61,9 @@ router.post("/addProductForSale" , async function(req,res,next){
                 productInKG: productInKG,
                 // farmerLat: farmerLat, //TOLD BY ANIRUDH----23/12/2020 5:23PM
                 // farmerLng: farmerLng,
-                salesPricePerKG: salesPricePerKG,
+                // salesPricePerKG: salesPricePerKG,
                 totalCost: totalCost,
+                profit: profit,
                 Date: date,
                 Time: time,
             });
@@ -72,10 +74,11 @@ router.post("/addProductForSale" , async function(req,res,next){
                 mandiId: mandiId,
                 productId: productId,
                 productInKG: productInKG,
-                // farmerLat: farmerLat,
-                // farmerLng: farmerLng,
-                salesPricePerKG: salesPricePerKG,
+                farmerLat: farmerLat,
+                farmerLng: farmerLng,
+                // salesPricePerKG: salesPricePerKG,
                 totalCost: totalCost,
+                profit: profit,
                 Date: getCurrentDate(),
                 Time: getCurrentTime(),
             });
@@ -99,7 +102,11 @@ router.post("/getFarmerProduct" , async function(req,res,next){
                                                     path: "farmerId"
                                                 })
                                                 .populate({
-                                                    path: "mandiId"
+                                                    path: "mandiId",
+                                                    select: "MandiName location",
+                                                    populate: {
+                                                        path: "State"
+                                                    }, 
                                                 })
                                                 .populate({
                                                     path: "productId"
