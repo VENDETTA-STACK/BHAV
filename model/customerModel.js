@@ -7,7 +7,7 @@ const customerSchema = mongoose.Schema({
     mobile: {
         type: String,
         require: true,
-        unique: true
+        // unique: true
     },
     location: {
        lat: {

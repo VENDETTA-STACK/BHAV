@@ -221,7 +221,10 @@ router.post("/getFilterMandi" , async function(req,res,next){
                                        })
                                       .populate({
                                           path: "State",
-                                      });
+                                      })
+                                      .populate({
+                                        path: "productId",
+                                    });
           if(record){
               res.status(200).json({ IsSuccess: true , Data: record , Message: "Mandi Data Found" });
           }else{
@@ -380,6 +383,32 @@ router.post("/insertAllMandiData", async function(req,res,next){
         // console.log(a);
     }
     res.status(200).json("Data Added");
+});
+
+router.post("/getDistanceFromMandi", async function(req,res,next){
+    const { userLat , userLong , mandiId } = req.body;
+    try {
+        let mandiData = await mandiSchema.find({ _id: mandiId });
+        if(mandiData.length){
+            let mandiLat = parseFloat(mandiData[0].location.lat);
+            let mandiLong = parseFloat(mandiData[0].location.long);
+            // console.log([mandiLat,mandiLong]);
+            let distanceFromUser = calculatelocation(userLat,userLong,mandiLat,mandiLong);
+            
+            distanceFromUser = parseFloat(distanceFromUser) / 1000;
+            // console.log(distanceFromUser);
+            
+            res.status(200).json({ 
+                                   IsSuccess: true, 
+                                   Distance: distanceFromUser, 
+                                   Message: "Distance Calculated" 
+                                });
+        }else{
+            res.status(200).json({ IsSuccess: true , Message: "Mandi Not Found" });
+        }
+    } catch (error) {
+        res.status(200).json({ IsSuccess: false , Message: error.message });
+    }
 });
 
 // router.post("/updateMandiCrops", async function(req,res,next){
