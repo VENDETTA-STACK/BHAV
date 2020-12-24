@@ -27,7 +27,7 @@ var uploadProduct = multer({ storage: productStorage });
 
 //Master Product Add
 router.post("/addProduct" , uploadProduct.single("productImage") , async function(req,res,next){
-    const { productName , productImage , priceChangeIndicator } = req.body;
+    const { productName , productImage } = req.body;
     const file = req.file;
     // let indiCator = yesterDayPrice - toDayPrice;
     // let PriceIndi;
@@ -42,7 +42,7 @@ router.post("/addProduct" , uploadProduct.single("productImage") , async functio
         var record = await new productSchema({
             productName: productName,
             productImage: file == undefined ? " " : file.path,
-            priceChangeIndicator: PriceIndi,
+            // priceChangeIndicator: PriceIndi,
         });
         let data = record.save();
         console.log(record);
