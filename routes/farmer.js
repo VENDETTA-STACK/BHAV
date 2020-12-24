@@ -46,7 +46,7 @@ function getCurrentTime(){
     return todayTime;
 }
 
-router.post("/addProductByFarmer" , async function(req,res,next){
+router.post("/addProductForSale" , async function(req,res,next){
     let { orderNo , totalCost ,farmerId , mandiId , productId , productInKG , 
         farmerLat , farmerLng , salesPricePerKG , date , time} = req.body;
     totalCost = parseFloat(productInKG) * parseFloat(salesPricePerKG);
@@ -58,8 +58,8 @@ router.post("/addProductByFarmer" , async function(req,res,next){
                 mandiId: mandiId,
                 productId: productId,
                 productInKG: productInKG,
-                farmerLat: farmerLat,
-                farmerLng: farmerLng,
+                // farmerLat: farmerLat, //TOLD BY ANIRUDH----23/12/2020 5:23PM
+                // farmerLng: farmerLng,
                 salesPricePerKG: salesPricePerKG,
                 totalCost: totalCost,
                 Date: date,
@@ -72,8 +72,8 @@ router.post("/addProductByFarmer" , async function(req,res,next){
                 mandiId: mandiId,
                 productId: productId,
                 productInKG: productInKG,
-                farmerLat: farmerLat,
-                farmerLng: farmerLng,
+                // farmerLat: farmerLat,
+                // farmerLng: farmerLng,
                 salesPricePerKG: salesPricePerKG,
                 totalCost: totalCost,
                 Date: getCurrentDate(),

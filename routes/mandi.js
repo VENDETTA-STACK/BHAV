@@ -50,11 +50,11 @@ router.post("/addMandi" , async function(req,res,next){
         }else{
             var record = await new mandiSchema({
                 MandiName: MandiName,
-                // location: {
-                //     lat : lat,
-                //     long : long,
-                //     completeAddress : completeAddress,
-                // },
+                location: {
+                    lat : lat,
+                    long : long,
+                    completeAddress : completeAddress,
+                },
                 State: State,
                 productId: productId
             });
@@ -98,18 +98,44 @@ router.post("/addMandi" , async function(req,res,next){
     }
 });
 
+// router.post("/updateMandi", async function(req,res,next){
+//     const { lat , long , completeAddress , mandiId } = req.body;
+//     try {
+//         var updateIs = {
+//             location: {
+//                 lat : lat,
+//                 long : long,
+//                 completeAddress : completeAddress,
+//             }
+//         }
+//         var record = await mandiSchema.findByIdAndUpdate(mandiId,updateIs);
+//         res.status(200).json({ IsSuccess: true , Data: 1 , Message: "Updated" });
+//     } catch (error) {
+//         res.status(500).json({ IsSuccess: false , Message: error.message });
+//     }
+// });
+
 router.post("/updateMandi", async function(req,res,next){
-    const { lat , long , completeAddress , mandiId } = req.body;
+    const { lat , long , completeAddress , mandiName } = req.body;
     try {
-        var updateIs = {
-            location: {
-                lat : lat,
-                long : long,
-                completeAddress : completeAddress,
+        let existMandi = await mandiSchema.find({ MandiName: mandiName});
+        console.log(existMandi.length);
+        if(existMandi.length == 1){
+            console.log(existMandi[0]._id);
+            mandiId = existMandi[0]._id;
+            var updateIs = {
+                location: {
+                    lat : lat,
+                    long : long,
+                    // completeAddress : completeAddress, //NOT TO ADD(TOLD BY ANIRUDH)
+                }
             }
+            var record = await mandiSchema.findByIdAndUpdate(mandiId,updateIs);
+            res.status(200).json({ IsSuccess: true , Data: 1 , Message: "Mandi location Updated" });
+        }else{
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Mandi Not Exist" });
         }
-        var record = await mandiSchema.findByIdAndUpdate(mandiId,updateIs);
-        res.status(200).json({ IsSuccess: true , Data: 1 , Message: "Updated" });
+        
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });
     }
