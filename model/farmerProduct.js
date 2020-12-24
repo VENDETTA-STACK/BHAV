@@ -13,7 +13,7 @@ const productByFarmerSchema = mongoose.Schema({
     productId: {
         type: mongoose.Types.ObjectId, ref: "product",
     },
-    productInKG: {
+    qty: {
         type: Number,
     },
     farmerLat: {

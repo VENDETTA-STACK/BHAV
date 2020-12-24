@@ -48,9 +48,9 @@ function getCurrentTime(){
 }
 
 router.post("/addProductForSale" , async function(req,res,next){
-    let { orderNo , totalCost ,farmerId , mandiId , productId , productInKG , 
+    let { orderNo , totalCost ,farmerId , mandiId , productId , qty , 
         farmerLat , farmerLng , profit , date , time} = req.body;
-    // totalCost = parseFloat(productInKG) * parseFloat(salesPricePerKG);
+    // totalCost = parseFloat(qty) * parseFloat(salesPricePerKG);
     try {
         if(req.body.type == "selLater"){
             var record = await new productByFarmerSchema({
@@ -58,7 +58,7 @@ router.post("/addProductForSale" , async function(req,res,next){
                 farmerId: farmerId,
                 mandiId: mandiId,
                 productId: productId,
-                productInKG: productInKG,
+                qty: qty,
                 // farmerLat: farmerLat, //TOLD BY ANIRUDH----23/12/2020 5:23PM
                 // farmerLng: farmerLng,
                 // salesPricePerKG: salesPricePerKG,
@@ -73,7 +73,7 @@ router.post("/addProductForSale" , async function(req,res,next){
                 farmerId: farmerId,
                 mandiId: mandiId,
                 productId: productId,
-                productInKG: productInKG,
+                qty: qty,
                 farmerLat: farmerLat,
                 farmerLng: farmerLng,
                 // salesPricePerKG: salesPricePerKG,
