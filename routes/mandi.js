@@ -279,7 +279,7 @@ router.post("/getMandiProductPrice" , async function(req,res,next){
                         })
                         .populate({
                             path: "mandiId",
-                            select: "MandiName",
+                            select: "MandiName MandiMarathiName",
                         });
                 if(productsPriceData.length > 0){
                     productPriceDataIs.push(productsPriceData[0]);
@@ -419,6 +419,27 @@ router.post("/getDistanceFromMandi", async function(req,res,next){
 //     let record = await mandiSchema.findByIdAndUpdate(aa,updateIs)
 //     res.status(200).json("Done...............>!!!!!!!!!");
 // });
+
+//Update Marathi Name for Mandi ----27-12-2020----MONIL
+router.post("/updateMandiName",async function(req,res,next){
+    const { MandiName , MandiMarathiName } = req.body;
+    try {
+        let existMandi = await mandiSchema.find({ MandiName: MandiName });
+        // console.log(existMandi.length);
+        if(existMandi.length == 1){
+            let updateIs = {
+                MandiMarathiName: MandiMarathiName,
+            }
+            let updateData = await mandiSchema.findByIdAndUpdate(existMandi[0]._id,updateIs);
+            res.status(200).json({ IsSuccess: true , Data: 1 , Message: "Mandi Marathi Name Updated" });
+        }else{
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Mandi Not Found" });
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false , Message: error.message });
+    }
+});
+
 
 router.post("/deleteAllMandi", async function(req,res,next){
     console.log("hello");

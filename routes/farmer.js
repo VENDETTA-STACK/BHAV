@@ -103,7 +103,7 @@ router.post("/getFarmerProduct" , async function(req,res,next){
                                                 })
                                                 .populate({
                                                     path: "mandiId",
-                                                    select: "MandiName location",
+                                                    select: "MandiName MandiMarathiName location",
                                                     populate: {
                                                         path: "State"
                                                     }, 

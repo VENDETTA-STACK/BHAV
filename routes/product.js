@@ -56,6 +56,25 @@ router.post("/addProduct" , uploadProduct.single("productImage") , async functio
     }
 });
 
+//Update Marathi Name for Product ----27-12-2020----MONIL
+router.post("/updateProductName",async function(req,res,next){
+    const { productName , productMarathiName } = req.body;
+    try {
+        let existProduct = await productSchema.find({ productName: productName });
+        if(existProduct.length == 1){
+            let updateIs = {
+                productMarathiName: productMarathiName,
+            }
+            let updateData = await productSchema.findByIdAndUpdate(existProduct[0]._id,updateIs);
+            res.status(200).json({ IsSuccess: true , Data: 1 , Message: "Product Marathi Name Updated" });
+        }else{
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Product Not Found" });
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false , Message: error.message });
+    }
+});
+
 router.post("/updateProductImage", uploadProduct.single("productImage") , async function(req,res,next){
     const { productId } = req.body;
     try {
@@ -68,7 +87,7 @@ router.post("/updateProductImage", uploadProduct.single("productImage") , async 
             let updateRecord = await productSchema.findByIdAndUpdate(existProduct[0]._id,updateIs);
             res.status(200).json({ IsSuccess: true , Data: 1 , Message: "Product Image Updated" });
         }else{
-            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Product Image Not Updated" });
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Product Not Found" });
         }
     } catch (error) {
         res.status(500).json({ IsSuccess: false , Message: error.message });

@@ -195,7 +195,7 @@ router.post("/getProductUpdatePrice", async function(req,res,next){
                                                     })
                                                     .populate({
                                                         path: "mandiId",
-                                                        select: "MandiName"
+                                                        select: "MandiName MandiMarathiName"
                                                     })
                                                     .populate({
                                                         path: "productId",
@@ -223,7 +223,7 @@ router.post("/getMandiWiseCrop" , async function(req,res,next){
                                                     })
                                                     .populate({
                                                         path: "mandiId",
-                                                        select: "MandiName"
+                                                        select: "MandiName MandiMarathiName"
                                                     })
                                                     .populate({
                                                         path: "productId"
@@ -255,7 +255,7 @@ router.post("/getCropPriceStateWise" , async function(req,res,next){
                                     })
                                     .populate({
                                         path: "mandiId",
-                                        select: "MandiName"
+                                        select: "MandiName MandiMarathiName"
                                     });
             console.log(record);
         // let dataIs = [];
@@ -336,7 +336,7 @@ router.post("/getCropPriceInAllMandi", async function(req,res,next){
                                                                 })
                                                                 .populate({
                                                                     path: "mandiId",
-                                                                    select: "MandiName"
+                                                                    select: "MandiName MandiMarathiName"
                                                                 })
                                                                 .populate({
                                                                     path: "stateId"

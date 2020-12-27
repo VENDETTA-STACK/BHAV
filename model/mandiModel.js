@@ -5,6 +5,9 @@ const mandiSchema = mongoose.Schema({
     MandiName: {
         type: String,
     },
+    MandiMarathiName: {
+        type: String,
+    },
     State: {
         type: mongoose.Types.ObjectId, ref: "State",
     },
