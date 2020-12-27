@@ -56,6 +56,25 @@ router.post("/addProduct" , uploadProduct.single("productImage") , async functio
     }
 });
 
+router.post("/updateProductImage", uploadProduct.single("productImage") , async function(req,res,next){
+    const { productId } = req.body;
+    try {
+        const file = req.file;
+        var existProduct = await productSchema.find({ _id: productId });
+        if(existProduct.length == 1){
+            let updateIs = {
+                productImage: file == undefined ? " " : file.path,
+            }
+            let updateRecord = await productSchema.findByIdAndUpdate(existProduct[0]._id,updateIs);
+            res.status(200).json({ IsSuccess: true , Data: 1 , Message: "Product Image Updated" });
+        }else{
+            res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Product Image Not Updated" });
+        }
+    } catch (error) {
+        res.status(500).json({ IsSuccess: false , Message: error.message });
+    }
+});
+
 router.post("/getProducts" , async function(req,res,next){
     try {
         var record = await productSchema.find();
@@ -152,7 +171,5 @@ router.post("/getProductDetails" , async function(req,res,next){
         res.status(500).json({ IsSuccess: false , Message: error.message });
     }
 });
-
-
 
 module.exports = router;
