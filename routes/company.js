@@ -48,7 +48,7 @@ router.post("/getComapnyList" , async function(req,res,next){
                                         });
 
         if(record){
-            res.status(200).json({ IsSuccess: true , Data: [record] , Message: "Company Found" });
+            res.status(200).json({ IsSuccess: true , Data: record , Message: "Company Found" });
         }else{
             res.status(200).json({ IsSuccess: true , Data: 0 , Message: "Company Not Found" });
         }

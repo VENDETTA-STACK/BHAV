@@ -112,7 +112,6 @@ router.post("/getFarmerProduct" , async function(req,res,next){
                                                     path: "productId"
                                                 });
         if(record.length > 0){
-            // record.save();
             res.status(200).json({ IsSuccess: true , Data: record , Message: "Products Found" });
         }else{
             res.status(200).json({ IsSuccess: true , Data: 0 , Message: "No Product Found" });
