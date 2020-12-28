@@ -111,7 +111,7 @@ router.post("/getFarmerProduct" , async function(req,res,next){
                                                 .populate({
                                                     path: "productId"
                                                 });
-        if(record){
+        if(record.length > 0){
             // record.save();
             res.status(200).json({ IsSuccess: true , Data: record , Message: "Products Found" });
         }else{
